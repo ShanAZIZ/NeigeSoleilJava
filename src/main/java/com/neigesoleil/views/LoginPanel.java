@@ -6,89 +6,124 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 
-public class LoginPanel extends JPanel implements ActionListener{
+public class LoginPanel extends JPanel implements ActionListener, MouseListener {
 
-    // Les deux panel qui composent le panel principal
-    private JPanel credentialPanel = new JPanel();
-    private JPanel buttonPanel = new JPanel();
-
-    // Boutons inclus dans les panel
-    private JButton btAnnuler = new JButton("Annuler");
-    private JButton btConnexion = new JButton("Connexion");
-
-    // Champs d'insertions du panel
-    private JTextField txtUsername = new JTextField();
-    private JTextField txtPassword = new JPasswordField();
-
-    // Label du panel
-    private JLabel lbTitre = new JLabel("Neige et Soleil - Adminitration");
+    private JLabel lbNeigeSoleil = new JLabel("NEIGE SOLEIL");
+    private JLabel lbTitre = new JLabel("ADMINISTRATION");
     private JLabel lbUsername = new JLabel("Nom d'utilisateur");
+    private JTextField txtUsername = new JTextField();
     private JLabel lbPassword = new JLabel("Mot de passe");
+    private JPasswordField txtPassword = new JPasswordField();
+    private JButton btnConnexion = new JButton("Connexion");
+    private JButton btnAnnuler = new JButton("Annuler");
 
-    // Font du projet
-    private Font font;
+    public LoginPanel(){
+        this.setLayout(null);
+        this.setBackground(Color.DARK_GRAY);
 
-    public LoginPanel(Font font){
+        this.lbNeigeSoleil.setBounds(0,0,200,100);
+        lbNeigeSoleil.setForeground(Color.WHITE);
+        lbNeigeSoleil.setHorizontalAlignment( SwingConstants.CENTER );
+        lbNeigeSoleil.setVerticalAlignment(SwingConstants.CENTER);
+        lbNeigeSoleil.setBackground(Color.DARK_GRAY);
+        lbNeigeSoleil.setOpaque(true);
+        lbNeigeSoleil.setFont(lbNeigeSoleil.getFont().deriveFont(25,25));
+        lbNeigeSoleil.setBorder(BorderFactory.createLineBorder(Color.WHITE, 5));
+        this.add(lbNeigeSoleil);
 
-        // Les font du panel
-        this.font = font; // Font principal
-        Font titleFont = new Font(Window.fontName, Font.BOLD, 50); // Font du titre
-
-        // Forme du panel
-        this.setBounds(0,0,800,600);
-        this.setBackground(new Color(231, 231, 227));
-
-        this.credentialPanel.setBounds(400,600, 400,400);
-        this.credentialPanel.setLayout(new GridLayout(4,0));
-
-        // TODO: Configurer la forme des éléments qui constituent le panel
-
-        // Forme des label
-        lbTitre.setBounds(150, 300, 520, 30);
-        lbTitre.setFont(titleFont);
-        // Forme des fields
-        // Forme des boutons
-
-
-
-        this.credentialPanel.add(lbUsername);
-        this.credentialPanel.add(txtUsername);
-        this.credentialPanel.add(lbPassword);
-        this.credentialPanel.add(txtPassword);
-
+        this.lbTitre.setBounds(200,0,600,100);
+        lbTitre.setForeground(Color.WHITE);
+        lbTitre.setHorizontalAlignment( SwingConstants.CENTER );
+        lbTitre.setVerticalAlignment(SwingConstants.CENTER);
+        lbTitre.setBackground(new Color(196,114,63));
+        lbTitre.setOpaque(true);
+        lbTitre.setFont(lbTitre.getFont().deriveFont(Font.BOLD,25));
         this.add(lbTitre);
-        this.add(credentialPanel);
 
-        this.add(btConnexion);
-        this.add(btAnnuler);
+        this.lbUsername.setBounds(250,180,300,30);
+        lbUsername.setForeground(Color.WHITE);
+        lbUsername.setHorizontalAlignment( SwingConstants.CENTER );
+        lbUsername.setVerticalAlignment(SwingConstants.CENTER);
+        lbUsername.setFont(lbUsername.getFont().deriveFont(Font.BOLD,20));
+        this.add(lbUsername);
 
+        this.txtUsername.setBounds(250,230,300,30);
+        this.add(txtUsername);
 
-        this.btConnexion.addActionListener(this);
-        this.btAnnuler.addActionListener(this);
+        this.lbPassword.setBounds(250,280,300,30);
+        lbPassword.setForeground(Color.WHITE);
+        lbPassword.setHorizontalAlignment( SwingConstants.CENTER );
+        lbPassword.setVerticalAlignment(SwingConstants.CENTER);
+        lbPassword.setFont(lbPassword.getFont().deriveFont(Font.BOLD,20));
+        this.add(lbPassword);
 
-        this.credentialPanel.setVisible(true);
+        this.txtPassword.setBounds(250,330,300,30);
+        this.add(txtPassword);
+
+        this.btnConnexion.setBounds(200,390,190,40);
+        this.btnConnexion.setForeground(Color.WHITE);
+        this.btnConnexion.setBackground(Color.DARK_GRAY);
+        this.btnConnexion.setBorder(BorderFactory.createLineBorder (Color.WHITE, 2));
+        this.btnConnexion.setOpaque(true);
+        this.btnConnexion.addActionListener(this);
+        this.btnConnexion.addMouseListener(this);
+        this.add(btnConnexion);
+
+        this.btnAnnuler.setBounds(410,390,190,40);
+        this.btnAnnuler.setForeground(Color.WHITE);
+        this.btnAnnuler.setBackground(new Color(196,114,63));
+        this.btnAnnuler.setBorder(BorderFactory.createLineBorder (Color.WHITE, 2));
+        this.btnAnnuler.setOpaque(true);
+        this.btnAnnuler.addActionListener(this);
+        this.btnAnnuler.addMouseListener(this);
+        this.add(btnAnnuler);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == btAnnuler){
+        if(e.getSource() == btnAnnuler) {
             this.txtUsername.setText("");
             this.txtPassword.setText("");
         }
-        else if (e.getSource() == btConnexion) {
-            String username;
-            String password;
-            username = this.txtUsername.getText();
-            password = this.txtPassword.getText();
-            try {
-                NeigeSoleil.authenticate(username, password);
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            } catch (InterruptedException interruptedException) {
-                interruptedException.printStackTrace();
-            }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (e.getSource() == btnAnnuler) {
+            this.btnAnnuler.setBackground(new Color(180,100,55));
         }
+        else if (e.getSource() == btnConnexion) {
+            this.btnConnexion.setBackground(Color.LIGHT_GRAY);
+        }
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (e.getSource() == btnAnnuler) {
+            this.btnAnnuler.setBackground(new Color(196,114,63));
+        }
+        else if (e.getSource() == btnConnexion) {
+            this.btnConnexion.setBackground(Color.DARK_GRAY);
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }
