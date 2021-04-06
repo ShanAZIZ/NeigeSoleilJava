@@ -1,4 +1,4 @@
-package neigesoleil.views;
+package com.neigesoleil.views;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
  * Nous n'avons pas à les instancier
  * TODO: Refactor à faire -> enlever la répétition de code
  */
-public class InputData {
+public class IOData {
     private static BufferedReader clavier = new BufferedReader(new InputStreamReader(System.in));
 
     //Scanner : nextInt ()
