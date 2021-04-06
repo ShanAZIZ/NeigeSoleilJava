@@ -1,4 +1,4 @@
-package neigesoleil.views;
+package com.neigesoleil.views;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,7 +7,10 @@ import java.awt.event.ActionListener;
 
 public class Window extends JFrame implements ActionListener {
 
-    LoginPanel loginPanel = new LoginPanel();
+    LoginPanel loginPanel;
+    MainPanel mainPanel;
+    static String fontName = "Helvetica";
+    Font font = new Font("fontName", Font.PLAIN, 13);
 
     public Window() {
 
@@ -27,9 +30,21 @@ public class Window extends JFrame implements ActionListener {
 
     }
 
-    public void login(){
-        LoginPanel loginPanel = new LoginPanel();
-        this.add(loginPanel);
-        loginPanel.setVisible(true);
+    public void showLogin(){
+        this.loginPanel = new LoginPanel(this.font);
+        this.add(this.loginPanel);
+        this.loginPanel.setVisible(true);
     }
+
+    public void hidePanel(JPanel panel){
+        panel.setVisible(false);
+    }
+
+    public void showMainPanel() {
+        this.hidePanel(this.loginPanel);
+        this.mainPanel = new MainPanel();
+        this.add(this.mainPanel);
+        this.mainPanel.setVisible(true);
+    }
+
 }
