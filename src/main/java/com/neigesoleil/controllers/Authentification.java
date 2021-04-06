@@ -1,23 +1,26 @@
-package neigesoleil.controllers;
+package com.neigesoleil.controllers;
 
 public class Authentification {
     String username;
     String password;
     String token;
+    String url = "api-token-auth/";
 
     public Authentification(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public Authentification(String username, String password, String token) {
-        this.username = username;
-        this.password = password;
-        this.token = token;
-    }
-
     public void Authenticate(String username, String password){
         // TODO: Récupérer le token avec les paramètres par un POST
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getUsername() {
@@ -42,5 +45,13 @@ public class Authentification {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    // Renvoie une chaine avec username et password sous syntaxe Json
+    @Override
+    public String toString() {
+        return "{ \"username\" : \"" + this.username + "\","
+                + "\"password\" : \"" + this.password + "\"}"
+                ;
     }
 }
