@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
 
 public class LoginPanel extends JPanel implements ActionListener, MouseListener {
 
@@ -88,6 +87,14 @@ public class LoginPanel extends JPanel implements ActionListener, MouseListener 
         if(e.getSource() == btnAnnuler) {
             this.txtUsername.setText("");
             this.txtPassword.setText("");
+        }
+        else if(e.getSource()==btnConnexion){
+            String username = txtUsername.getText();
+            String password = txtPassword.getText();
+            if(!NeigeSoleil.authenticate(username, password)) {
+                JOptionPane.showMessageDialog(this,
+                        "Erreur de connexion, Verifiez vos identifiants, ou changez les URL");
+            }
         }
     }
 
