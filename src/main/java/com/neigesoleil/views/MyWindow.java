@@ -41,12 +41,8 @@ public class MyWindow extends JFrame implements ActionListener {
         this.add(this.loginPanel);
     }
 
-    public void hidePanel(JPanel panel){
-        panel.setVisible(false);
-    }
-
     public void showMainPanel() {
-        this.hidePanel(this.loginPanel);
+        this.loginPanel.setVisible(false);
         this.mainPanel = new MainPanel();
         this.add(this.mainPanel);
         this.mainPanel.setVisible(true);
