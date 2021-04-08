@@ -13,6 +13,9 @@ public class ClientHttp {
 
     private static String url = "http://localhost:8000/";
     private static String tokenUrl = "api-token-auth/";
+    private static String userUrl = "api/user/";
+    private static String getProfileUrl = "api/profile/";
+
     private static HttpClient client = HttpClient.newBuilder().build();
 
     public static String getUrl() {
@@ -30,6 +33,14 @@ public class ClientHttp {
     public static void setTokenUrl(String tokenUrl) {
         ClientHttp.tokenUrl = tokenUrl;
     }
+
+    public static String getUserUrl() { return userUrl; }
+
+    public static void setUserUrl(String userUrl) { ClientHttp.userUrl = userUrl; }
+
+    public static String getGetProfileUrl() { return getProfileUrl; }
+
+    public static void setGetProfileUrl(String getProfileUrl) { ClientHttp.getProfileUrl = getProfileUrl; }
 
     public static String getToken (Authentication auth) {
         System.out.println(auth.toString());
@@ -52,7 +63,9 @@ public class ClientHttp {
         }
         try {
             JsonNode tokenJson = JsonHandler.parse(response.body());
-            return tokenJson.get("token").asText();
+            if(tokenJson.get("is_superuser").asBoolean()){
+                return tokenJson.get("token").asText();
+            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
