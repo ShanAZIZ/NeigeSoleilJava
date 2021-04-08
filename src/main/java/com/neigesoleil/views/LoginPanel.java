@@ -93,6 +93,8 @@ public class LoginPanel extends JPanel implements ActionListener, MouseListener 
             String password = txtPassword.getText();
             if(NeigeSoleil.authenticate(username, password)) {
                 NeigeSoleil.getMainWindow().showMainPanel();
+                JOptionPane.showMessageDialog(this,
+                        "Bienvenue "+NeigeSoleil.getAuth().getUsername());
             } else {
                 JOptionPane.showMessageDialog(this,
                         "Erreur de connexion, Verifiez vos identifiants, ou changez les URL");
