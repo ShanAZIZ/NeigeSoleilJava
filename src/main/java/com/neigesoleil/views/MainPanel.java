@@ -22,6 +22,5 @@ public class MainPanel extends JPanel {
 
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         this.add(tabbedPane);
-
     }
 }
