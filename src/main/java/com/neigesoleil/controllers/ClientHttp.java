@@ -14,7 +14,8 @@ public class ClientHttp {
     private static String url = "http://localhost:8000/";
     private static String tokenUrl = "api-token-auth/";
     private static String userUrl = "api/user/";
-    private static String getProfileUrl = "api/profile/";
+    private static String userProfileUrl = "api/user-profile/";
+    private static String profileUrl = "api/profile/";
 
     private static HttpClient client = HttpClient.newBuilder().build();
 
@@ -38,12 +39,15 @@ public class ClientHttp {
 
     public static void setUserUrl(String userUrl) { ClientHttp.userUrl = userUrl; }
 
-    public static String getGetProfileUrl() { return getProfileUrl; }
+    public static String getUserProfileUrl() { return userProfileUrl; }
 
-    public static void setGetProfileUrl(String getProfileUrl) { ClientHttp.getProfileUrl = getProfileUrl; }
+    public static void setUserProfileUrl(String getProfileUrl) { ClientHttp.userProfileUrl = getProfileUrl; }
+
+    public static String getProfileUrl() { return profileUrl; }
+
+    public static void setProfileUrl(String profileUrl) { ClientHttp.profileUrl = profileUrl; }
 
     public static String getToken (Authentication auth) {
-        System.out.println(auth.toString());
         String url = ClientHttp.url + ClientHttp.tokenUrl;
 
         // Requête
@@ -57,9 +61,9 @@ public class ClientHttp {
         try {
             response = ClientHttp.client.send(tokenRequest, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         try {
             JsonNode tokenJson = JsonHandler.parse(response.body());
@@ -67,7 +71,7 @@ public class ClientHttp {
                 return tokenJson.get("token").asText();
             }
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return "";
     }
@@ -81,11 +85,10 @@ public class ClientHttp {
                 .build()
                 ;
         HttpResponse<String> response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
-
         return response.body();
     }
 
-    public static String postRequest (String url, String token, String values) throws Exception {
+    public static Boolean postRequest (String url, String token, String values) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
@@ -93,12 +96,20 @@ public class ClientHttp {
                 .POST(HttpRequest.BodyPublishers.ofString(values))
                 .build();
 
-        HttpResponse<String> response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response.body();
+        try{
+            HttpResponse<String> response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println(response.body());
+            if(response.statusCode() == 201) {
+                return true;
+            }
+            return false;
+        } catch (Exception e){
+            // e.printStackTrace();
+            return false;
+        }
     }
 
-    public static String putRequest (String url, String token, String values) throws Exception{
+    public static boolean putRequest (String url, String token, String values) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
@@ -106,12 +117,20 @@ public class ClientHttp {
                 .PUT(HttpRequest.BodyPublishers.ofString(values))
                 .build();
 
-        HttpResponse<String> response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response.body();
+        HttpResponse<String> response = null;
+        try {
+            response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
+            if(response.statusCode() == 200) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            // e.printStackTrace();
+            return false;
+        }
     }
 
-    public static String deleteRequest (String url, String token) throws Exception {
+    public static boolean deleteRequest (String url, String token) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
@@ -119,9 +138,17 @@ public class ClientHttp {
                 .DELETE()
                 .build();
 
-        HttpResponse<String> response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response.body();
+        HttpResponse<String> response = null;
+        try {
+            response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
+            if(response.statusCode() == 204) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            // e.printStackTrace();
+            return false;
+        }
     }
 
 }
