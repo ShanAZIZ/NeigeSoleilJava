@@ -1,7 +1,7 @@
 package com.neigesoleil.models;
 
 public class Profile {
-    private String id;
+    private int id;
     private String adresse;
     private String code_postale;
     private String ville;
@@ -11,7 +11,7 @@ public class Profile {
     public Profile() {
     }
 
-    public Profile(String id, String adresse, String code_postale, String ville, String telephone, String rib) {
+    public Profile(int id, String adresse, String code_postale, String ville, String telephone, String rib) {
         this.id = id;
         this.adresse = adresse;
         this.code_postale = code_postale;
@@ -28,11 +28,11 @@ public class Profile {
         this.rib = rib;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

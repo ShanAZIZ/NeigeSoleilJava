@@ -91,4 +91,16 @@ public class User implements Serializable {
     public void setUserProfile(Profile userProfile) {
         this.userProfile = userProfile;
     }
+
+    public String userProfileToString(){
+       String profiletoString = "{\n" +
+               "\t\"user\":"+this.id+",\n" +
+               "\t\"adresse\":\""+this.userProfile.getAdresse()+"\",\n" +
+               "\t\"code_postale\":\""+this.userProfile.getCode_postale()+"\",\n" +
+               "\t\"ville\":\""+this.userProfile.getVille()+"\",\n" +
+               "\t\"telephone\":\""+this.userProfile.getTelephone()+"\",\n" +
+               "\t\"rib\":\""+this.userProfile.getRib()+"\"\n" +
+               "}";
+       return profiletoString;
+    }
 }

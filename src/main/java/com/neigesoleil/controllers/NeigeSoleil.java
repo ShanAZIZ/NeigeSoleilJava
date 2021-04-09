@@ -68,9 +68,8 @@ public class NeigeSoleil {
                 User oneUser = JsonHandler.fromJson(it.next(), User.class);
                 allUsers.add(oneUser);
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return allUsers;
     }
@@ -82,7 +81,7 @@ public class NeigeSoleil {
             User unUser = JsonHandler.fromJson(node, User.class);
             return unUser;
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             return null;
         }
     }
@@ -90,52 +89,45 @@ public class NeigeSoleil {
     public static Boolean addUser(User unUser) {
         JsonNode valueJson = JsonHandler.toJson(unUser);
         ((ObjectNode) valueJson).remove("id");
-        try {
-            ClientHttp.postRequest(ClientHttp.getUrl() + ClientHttp.getUserUrl(), auth.getToken(), String.valueOf(valueJson));
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        return ClientHttp.postRequest(ClientHttp.getUrl() + ClientHttp.getUserUrl(), auth.getToken(), String.valueOf(valueJson));
     }
 
     public static Boolean updateUser(User unUser){
         JsonNode valueJson = JsonHandler.toJson(unUser);
-        System.out.println(valueJson);
-        try {
-            ClientHttp.putRequest(ClientHttp.getUrl() + ClientHttp.getUserUrl()+unUser.getId()+"/", auth.getToken(), String.valueOf(valueJson));
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        return ClientHttp.putRequest(ClientHttp.getUrl() + ClientHttp.getUserUrl()+unUser.getId()+"/", auth.getToken(), String.valueOf(valueJson));
     }
 
     public static Boolean deleteUser(int userId){
-        try {
-            ClientHttp.deleteRequest(ClientHttp.getUrl()+ ClientHttp.getUserUrl()+ userId + "/", auth.getToken());
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        return ClientHttp.deleteRequest(ClientHttp.getUrl()+ ClientHttp.getUserUrl()+ userId + "/", auth.getToken());
+    }
+
+    public static Boolean editPassword(int userId, String new_password){
+        new_password = "{ \"new_password\":\""+new_password+"\" }";
+        return  ClientHttp.postRequest(ClientHttp.getUrl() + ClientHttp.getUserUrl()+userId+"/"+"set_password/", auth.getToken(), new_password);
     }
 
     /***** PROFILES *****/
-    public static ArrayList<Profile> getAllProfiles() {
-        ArrayList<Profile> allProfiles = new ArrayList<>();
+    public static Profile getProfile(int userId){
         try {
-            String allProfileString = ClientHttp.getRequest(ClientHttp.getUrl() + ClientHttp.getGetProfileUrl(), auth.getToken());
-            JsonNode allProfileJson = JsonHandler.parse(allProfileString);
-            Iterator<JsonNode> it = allProfileJson.elements();
-            while(it.hasNext()) {
-                Profile oneProfile = JsonHandler.fromJson(it.next(), Profile.class);
-                allProfiles.add(oneProfile);
-            }
+            String userString = ClientHttp.getRequest(ClientHttp.getUrl() + ClientHttp.getUserProfileUrl() + userId + "/", auth.getToken());
+            JsonNode node = JsonHandler.parse(userString);
+            Profile unProfile = JsonHandler.fromJson(node, Profile.class);
+            return unProfile;
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            return null;
         }
-        return allProfiles;
+    }
+
+    public static Boolean addProfil(User unUser) {
+        return ClientHttp.postRequest(ClientHttp.getUrl() + ClientHttp.getProfileUrl(), auth.getToken(), unUser.userProfileToString());
+    }
+
+    public static Boolean updateProfile(User unUser){
+        int profileId = unUser.getUserProfile().getId();
+        JsonNode node = JsonHandler.toJson(unUser.getUserProfile());
+        ((ObjectNode) node).put("user", unUser.getId());
+        return ClientHttp.putRequest(ClientHttp.getUrl() + ClientHttp.getProfileUrl() + profileId + "/", auth.getToken(), String.valueOf(node));
     }
 
 

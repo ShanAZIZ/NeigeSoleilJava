@@ -2,6 +2,7 @@ package com.neigesoleil.views;
 
 import com.neigesoleil.controllers.NeigeSoleil;
 import com.neigesoleil.controllers.TableModel;
+import com.neigesoleil.models.Profile;
 import com.neigesoleil.models.User;
 
 import javax.swing.*;
@@ -16,7 +17,7 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
 
     ArrayList<User> allUsers = NeigeSoleil.getAllUsers();
     private User editingUser;
-    private Boolean editStatus;
+    private Boolean editStatus =false;
 
     private JLabel lbTitle = new JLabel("Neige et Soleil - Administration");
     /***** NORTH LAYOUT *****/
@@ -49,17 +50,26 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
     private JCheckBox cProprietaire = new JCheckBox("Est un propriétaire");
 
     JButton btnEditPassword = new JButton("Changer le mot de passe");
-    JButton profile = new JButton("Profil");
-    private JLabel lbAdresse = new JLabel("Adresse : ");
+    JButton btnProfile = new JButton("Profil");
+
     private JTextField txtAdresse = new JTextField();
-    private JLabel lbCodePostale = new JLabel("Code Postal : ");
     private JTextField txtCodePostale = new JTextField();
-    private JLabel lbVille = new JLabel("Ville : ");
     private JTextField txtVille = new JTextField();
-    private JLabel lbTelephone = new JLabel("Telephone : ");
     private JTextField txtTelephone = new JTextField();
-    private JLabel lbRib = new JLabel("RIB : ");
     private JTextField txtRib = new JTextField();
+    JComponent [] profilInputs =  new JComponent [] {
+            new JLabel("Adresse : "),
+            this.txtAdresse,
+            new JLabel("Code Postal : "),
+            this.txtCodePostale,
+            new JLabel("Ville : "),
+            this.txtVille,
+            new JLabel("Telephone : "),
+            this.txtTelephone,
+            new JLabel("RIB : "),
+            this.txtRib
+    };
+
 
     public UserPanel() {
 
@@ -85,8 +95,11 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
         this.add(this.dataPanel, BorderLayout.CENTER);
 
         /***** EDIT PANEL *****/
+        this.btnProfile.setVisible(false);
+        this.btnEditPassword.setVisible(false);
+
         this.userForm.setPreferredSize(new Dimension(250,600));
-        this.userForm.setLayout(new GridLayout(12,2));
+        this.userForm.setLayout(new GridLayout(15,1));
         this.userForm.add(this.lbusername);
         this.userForm.add(this.txtUsername);
         this.userForm.add(this.lbNom);
@@ -98,6 +111,9 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
         this.userForm.add(this.cProprietaire);
         this.userForm.add(btnAnnuler);
         this.userForm.add(btnValider);
+        this.userForm.add(btnEditPassword);
+        this.userForm.add(btnProfile);
+
         this.add(userForm, BorderLayout.LINE_START);
 
         this.btnValider.addActionListener(this);
@@ -105,6 +121,8 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
         this.btnModifier.addActionListener(this);
         this.btnSupprimer.addActionListener(this);
         this.dataTable.addMouseListener(this);
+        this.btnEditPassword.addActionListener(this);
+        this.btnProfile.addActionListener(this);
     }
 
     public void refresh(){
@@ -145,6 +163,8 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
 
     public void editUser() {
         this.btnValider.setText("Modifier");
+        this.btnEditPassword.setVisible(true);
+        this.btnProfile.setVisible(true);
         int num = this.dataTable.getSelectedRow();
         int idUser = Integer.parseInt(this.dataTable.getValueAt(num, 0).toString());
         this.editingUser = NeigeSoleil.getUser(idUser);
@@ -182,6 +202,72 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
         this.cProprietaire.setVisible(true);
         this.cProprietaire.setSelected(false);
         this.btnValider.setText("Ajouter");
+        this.btnProfile.setVisible(false);
+        this.btnEditPassword.setVisible(false);
+    }
+
+    public void editPassword(){
+        String password = JOptionPane.showInputDialog(this, "Saisissez le nouveau mot de passe");
+        if(NeigeSoleil.editPassword(this.editingUser.getId(), password)){
+            JOptionPane.showMessageDialog(this, "Changement de mot de passe reussi");
+        } else {
+            JOptionPane.showMessageDialog(this, "Echec de l'opération");
+        }
+    }
+
+    public void profileHandler(){
+        editingUser.setUserProfile(NeigeSoleil.getProfile(this.editingUser.getId()));
+        editingUser.getUserProfile();
+        if(editingUser.getUserProfile() != null) {
+            this.editProfile(editingUser.getUserProfile());
+        } else {
+            int retour = JOptionPane.showConfirmDialog(this,
+                    "Cet utilisateur n'as pas de profil, souhaitez vous en créer un ? ",
+                    "Gestion du profil",
+                    JOptionPane.YES_NO_OPTION);
+            if(retour == 0) {
+                this.createProfile();
+            }
+        }
+    }
+
+    public void createProfile() {
+        int result = JOptionPane.showConfirmDialog(null, this.profilInputs, "Profile Utilisateur", JOptionPane.OK_CANCEL_OPTION);
+        if(result == JOptionPane.OK_OPTION) {
+            this.editingUser.setUserProfile( new Profile(
+                    this.txtAdresse.getText(),
+                    this.txtCodePostale.getText(),
+                    this.txtVille.getText(), this.txtTelephone.getText(),
+                    this.txtRib.getText()
+            ));
+            if (NeigeSoleil.addProfil(editingUser)) {
+                JOptionPane.showMessageDialog(this, "Profile créer ! ");
+            } else {
+                JOptionPane.showMessageDialog(this, "Echec de la creation du profil");
+            }
+        }
+    }
+
+    public void editProfile(Profile unProfile){
+        this.txtAdresse.setText(unProfile.getAdresse());
+        this.txtCodePostale.setText(unProfile.getCode_postale());
+        this.txtVille.setText(unProfile.getVille());
+        this.txtTelephone.setText(unProfile.getTelephone());
+        this.txtRib.setText(unProfile.getRib());
+        int result = JOptionPane.showConfirmDialog(null, this.profilInputs, "Profile Utilisateur", JOptionPane.OK_CANCEL_OPTION);
+        if(result == JOptionPane.OK_OPTION) {
+            unProfile.setAdresse(this.txtAdresse.getText());
+            unProfile.setCode_postale(this.txtCodePostale.getText());
+            unProfile.setVille(this.txtVille.getText());
+            unProfile.setTelephone(this.txtTelephone.getText());
+            unProfile.setRib(this.txtRib.getText());
+            this.editingUser.setUserProfile(unProfile);
+            if (NeigeSoleil.updateProfile(this.editingUser)) {
+                JOptionPane.showMessageDialog(this, "Profile a jour ! ");
+            } else {
+                JOptionPane.showMessageDialog(this, "Echec de la mise à jour du profil");
+            }
+        }
     }
 
     @Override
@@ -198,7 +284,7 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
 
         }
 
-        else if(e.getSource() == btnSupprimer) {
+        if(e.getSource() == btnSupprimer) {
             int retour = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer cet utilisateur ?",
                     "Supression d'un client", JOptionPane.YES_NO_OPTION);
             if (retour == 0)
@@ -210,12 +296,20 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
             }
         }
 
-        else if (e.getSource() == btnAnnuler){
+        if (e.getSource() == btnAnnuler){
             this.cleanUserField();
         }
 
-        else if (e.getSource() == btnModifier) {
+        if (e.getSource() == btnModifier) {
             this.editUser();
+        }
+
+        if (e.getSource() == btnEditPassword){
+            this.editPassword();
+        }
+
+        if (e.getSource() == btnProfile){
+            this.profileHandler();
         }
     }
 
