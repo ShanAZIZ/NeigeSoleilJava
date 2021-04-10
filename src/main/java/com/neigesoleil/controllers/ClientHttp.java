@@ -1,9 +1,7 @@
 package com.neigesoleil.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -16,8 +14,9 @@ public class ClientHttp {
     private static String userUrl = "api/user/";
     private static String userProfileUrl = "api/user-profile/";
     private static String profileUrl = "api/profile/";
+    private static String contratUrl = "api/contrat/";
 
-    private static HttpClient client = HttpClient.newBuilder().build();
+    private static final HttpClient client = HttpClient.newBuilder().build();
 
     public static String getUrl() {
         return url;
@@ -47,6 +46,14 @@ public class ClientHttp {
 
     public static void setProfileUrl(String profileUrl) { ClientHttp.profileUrl = profileUrl; }
 
+    public static String getContratUrl() {
+        return contratUrl;
+    }
+
+    public static void setContratUrl(String contratUrl) {
+        ClientHttp.contratUrl = contratUrl;
+    }
+
     public static String getToken (Authentication auth) {
         String url = ClientHttp.url + ClientHttp.tokenUrl;
 
@@ -60,9 +67,7 @@ public class ClientHttp {
         HttpResponse<String> response = null;
         try {
             response = ClientHttp.client.send(tokenRequest, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            // e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             // e.printStackTrace();
         }
         try {
@@ -70,7 +75,7 @@ public class ClientHttp {
             if(tokenJson.get("is_superuser").asBoolean()){
                 return tokenJson.get("token").asText();
             }
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             // e.printStackTrace();
         }
         return "";
@@ -85,6 +90,7 @@ public class ClientHttp {
                 .build()
                 ;
         HttpResponse<String> response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.body());
         return response.body();
     }
 
@@ -99,10 +105,7 @@ public class ClientHttp {
         try{
             HttpResponse<String> response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println(response.body());
-            if(response.statusCode() == 201) {
-                return true;
-            }
-            return false;
+            return response.statusCode() == 201;
         } catch (Exception e){
             // e.printStackTrace();
             return false;
@@ -117,13 +120,10 @@ public class ClientHttp {
                 .PUT(HttpRequest.BodyPublishers.ofString(values))
                 .build();
 
-        HttpResponse<String> response = null;
+        HttpResponse<String> response;
         try {
             response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
-            if(response.statusCode() == 200) {
-                return true;
-            }
-            return false;
+            return response.statusCode() == 200;
         } catch (Exception e) {
             // e.printStackTrace();
             return false;
@@ -138,13 +138,10 @@ public class ClientHttp {
                 .DELETE()
                 .build();
 
-        HttpResponse<String> response = null;
+        HttpResponse<String> response;
         try {
             response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
-            if(response.statusCode() == 204) {
-                return true;
-            }
-            return false;
+            return response.statusCode() == 204;
         } catch (Exception e) {
             // e.printStackTrace();
             return false;

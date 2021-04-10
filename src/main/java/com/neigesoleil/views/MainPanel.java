@@ -7,7 +7,7 @@ public class MainPanel extends JPanel {
 
     private JTabbedPane tabbedPane = new JTabbedPane();
     private UserPanel userPanel = new UserPanel();
-    private JPanel secondPanel = new JPanel();
+    private ContratPanel contratPanel = new ContratPanel();
 
     public MainPanel() {
         this.setBounds(0, 0, 800, 600);
@@ -17,8 +17,8 @@ public class MainPanel extends JPanel {
         this.setOpaque(true);
         this.tabbedPane.addTab("Utilisateurs", null, userPanel,
                 "Gérer les utilisateurs");
-        this.tabbedPane.addTab("Test", null, secondPanel,
-                "Does nothing");
+        this.tabbedPane.addTab("Contrats", null, contratPanel,
+                "Gerer les contrats avec les propriétaires");
 
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         this.add(tabbedPane);
