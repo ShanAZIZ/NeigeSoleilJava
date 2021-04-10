@@ -2,6 +2,7 @@ package com.neigesoleil.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.neigesoleil.models.Contrat;
 import com.neigesoleil.models.Profile;
 import com.neigesoleil.models.User;
 import com.neigesoleil.views.MyWindow;
@@ -46,10 +47,7 @@ public class NeigeSoleil {
         try {
             NeigeSoleil.auth = new Authentication(username, password);
             NeigeSoleil.auth.setToken(ClientHttp.getToken(NeigeSoleil.auth));
-            if(auth.getToken() != ""){
-                return true;
-            }
-            return false;
+            return !auth.getToken().equals("");
         } catch (Exception e) {
             return false;
         }
@@ -74,12 +72,17 @@ public class NeigeSoleil {
         return allUsers;
     }
 
+    public static ArrayList<User> getAllProprietaire() {
+        ArrayList<User> allProp = NeigeSoleil.getAllUsers();
+        allProp.removeIf(unUser -> !unUser.getProprietaire());
+        return allProp;
+    }
+
     public static User getUser (int idUser) {
         try {
             String userString = ClientHttp.getRequest(ClientHttp.getUrl() + ClientHttp.getUserUrl()+ idUser + "/", auth.getToken());
             JsonNode node = JsonHandler.parse(userString);
-            User unUser = JsonHandler.fromJson(node, User.class);
-            return unUser;
+            return JsonHandler.fromJson(node, User.class);
         } catch (Exception e) {
             // e.printStackTrace();
             return null;
@@ -97,8 +100,8 @@ public class NeigeSoleil {
         return ClientHttp.putRequest(ClientHttp.getUrl() + ClientHttp.getUserUrl()+unUser.getId()+"/", auth.getToken(), String.valueOf(valueJson));
     }
 
-    public static Boolean deleteUser(int userId){
-        return ClientHttp.deleteRequest(ClientHttp.getUrl()+ ClientHttp.getUserUrl()+ userId + "/", auth.getToken());
+    public static void deleteUser(int userId){
+        ClientHttp.deleteRequest(ClientHttp.getUrl()+ ClientHttp.getUserUrl()+ userId + "/", auth.getToken());
     }
 
     public static Boolean editPassword(int userId, String new_password){
@@ -111,8 +114,7 @@ public class NeigeSoleil {
         try {
             String userString = ClientHttp.getRequest(ClientHttp.getUrl() + ClientHttp.getUserProfileUrl() + userId + "/", auth.getToken());
             JsonNode node = JsonHandler.parse(userString);
-            Profile unProfile = JsonHandler.fromJson(node, Profile.class);
-            return unProfile;
+            return JsonHandler.fromJson(node, Profile.class);
         } catch (Exception e) {
             // e.printStackTrace();
             return null;
@@ -128,6 +130,30 @@ public class NeigeSoleil {
         JsonNode node = JsonHandler.toJson(unUser.getUserProfile());
         ((ObjectNode) node).put("user", unUser.getId());
         return ClientHttp.putRequest(ClientHttp.getUrl() + ClientHttp.getProfileUrl() + profileId + "/", auth.getToken(), String.valueOf(node));
+    }
+
+    /***** CONTRATS *****/
+    public static ArrayList<Contrat> getAllContrats (){
+        ArrayList<Contrat> allContrats = new ArrayList<>();
+        try {
+            String allContratString = ClientHttp.getRequest(ClientHttp.getUrl() + ClientHttp.getContratUrl(), auth.getToken());
+            JsonNode allContratJson = JsonHandler.parse(allContratString);
+
+            Iterator<JsonNode> it = allContratJson.elements();
+            while(it.hasNext()) {
+                Contrat unContrat = JsonHandler.fromJson(it.next(), Contrat.class);
+                System.out.println(unContrat.getNom());
+                allContrats.add(unContrat);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return allContrats;
+    }
+
+    public static Boolean addContrat(Contrat unContrat){
+        JsonNode valueJson = JsonHandler.toJson(unContrat);
+        return ClientHttp.postRequest(ClientHttp.getUrl() + ClientHttp.getContratUrl(), auth.getToken(), String.valueOf(valueJson));
     }
 
 
