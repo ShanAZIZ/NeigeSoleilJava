@@ -15,6 +15,8 @@ public class ClientHttp {
     private static String userProfileUrl = "api/user-profile/";
     private static String profileUrl = "api/profile/";
     private static String contratUrl = "api/contrat/";
+    private static String reservationUrl = "api/reservation/";
+    private static String locationUrl = "api/location/";
 
     private static final HttpClient client = HttpClient.newBuilder().build();
 
@@ -52,6 +54,22 @@ public class ClientHttp {
 
     public static void setContratUrl(String contratUrl) {
         ClientHttp.contratUrl = contratUrl;
+    }
+
+    public static String getReservationUrl() {
+        return reservationUrl;
+    }
+
+    public static void setReservationUrl(String reservationUrl) {
+        ClientHttp.reservationUrl = reservationUrl;
+    }
+
+    public static String getLocationUrl() {
+        return locationUrl;
+    }
+
+    public static void setLocationUrl(String locationUrl) {
+        ClientHttp.locationUrl = locationUrl;
     }
 
     public static String getToken (Authentication auth) {
@@ -103,7 +121,7 @@ public class ClientHttp {
 
         try{
             HttpResponse<String> response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
-            return response.statusCode() == 201;
+            return response.statusCode() == 201 || response.statusCode() == 200;
         } catch (Exception e){
             // e.printStackTrace();
             return false;

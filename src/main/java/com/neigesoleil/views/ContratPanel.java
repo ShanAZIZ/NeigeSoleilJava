@@ -161,7 +161,7 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
         this.allProprietaire = NeigeSoleil.getAllProprietaire();
         this.allContrats = NeigeSoleil.getAllContrats();
         this.tabModel.setDonnees(this.setData());
-        this.cleanUserField();
+        this.cleanContratField();
     }
 
     public void editContrat() {
@@ -248,7 +248,7 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
         return userList;
     }
 
-    public void cleanUserField() {
+    public void cleanContratField() {
         this.txtAdresse.setText("");
         this.txtNom.setText("");
         this.txtCodePostale.setText("");
@@ -313,7 +313,7 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
 
         }
         if (e.getSource()==btnAnnuler){
-            this.cleanUserField();
+            this.cleanContratField();
         }
         if (e.getSource()==btnModifier){
             this.editContrat();

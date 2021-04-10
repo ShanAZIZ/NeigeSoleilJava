@@ -2,9 +2,7 @@ package com.neigesoleil.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.neigesoleil.models.Contrat;
-import com.neigesoleil.models.Profile;
-import com.neigesoleil.models.User;
+import com.neigesoleil.models.*;
 import com.neigesoleil.views.MyWindow;
 
 import java.util.ArrayList;
@@ -51,6 +49,11 @@ public class NeigeSoleil {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static void unAuthenticate(){
+        NeigeSoleil.auth = null;
+        NeigeSoleil.mainWindow.showLogin();
     }
 
     /***** USER *****/
@@ -176,6 +179,50 @@ public class NeigeSoleil {
         }
     }
 
+    /***** RESERVATIONS *****/
+    public static ArrayList<Reservation> getAllReservation (){
+        ArrayList<Reservation> AllReservation = new ArrayList<>();
+        try {
+            String allReservationString = ClientHttp.getRequest(ClientHttp.getUrl() + ClientHttp.getReservationUrl(), auth.getToken());
+            JsonNode allReservationJson = JsonHandler.parse(allReservationString);
+
+            Iterator<JsonNode> it = allReservationJson.elements();
+            while(it.hasNext()) {
+                Reservation uneReservation = JsonHandler.fromJson(it.next(), Reservation.class);
+                AllReservation.add(uneReservation);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return AllReservation;
+    }
+
+    public static Boolean addReservation(Reservation uneReservation){
+        JsonNode valueJson = JsonHandler.toJson(uneReservation);
+        return ClientHttp.postRequest(ClientHttp.getUrl() + ClientHttp.getReservationUrl(), auth.getToken(), String.valueOf(valueJson));
+    }
+
+    public static Boolean updateReservation(Reservation uneReservation){
+        int reservationId = uneReservation.getId();
+        JsonNode valueJson = JsonHandler.toJson(uneReservation);
+        return ClientHttp.putRequest(ClientHttp.getUrl() + ClientHttp.getReservationUrl() + reservationId + "/", auth.getToken(), String.valueOf(valueJson));
+    }
+
+    public static Reservation getReservation(int idReservation){
+        try {
+            String reservationString = ClientHttp.getRequest(ClientHttp.getUrl() + ClientHttp.getReservationUrl()+ idReservation + "/", auth.getToken());
+            JsonNode node = JsonHandler.parse(reservationString);
+            System.out.println(reservationString);
+            return JsonHandler.fromJson(node, Reservation.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void deleteReservation(int idReservation){
+        ClientHttp.deleteRequest(ClientHttp.getUrl()+ ClientHttp.getReservationUrl()+ idReservation + "/", auth.getToken());
+    }
 
 
 }

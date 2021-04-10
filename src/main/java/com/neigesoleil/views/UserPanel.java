@@ -190,7 +190,6 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
                 JOptionPane.showMessageDialog(this, "Echec de la modification!");
             }
         }
-
     }
 
     public void cleanUserField() {
