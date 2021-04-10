@@ -142,7 +142,6 @@ public class NeigeSoleil {
             Iterator<JsonNode> it = allContratJson.elements();
             while(it.hasNext()) {
                 Contrat unContrat = JsonHandler.fromJson(it.next(), Contrat.class);
-                System.out.println(unContrat.getNom());
                 allContrats.add(unContrat);
             }
         } catch (Exception e) {
@@ -154,6 +153,27 @@ public class NeigeSoleil {
     public static Boolean addContrat(Contrat unContrat){
         JsonNode valueJson = JsonHandler.toJson(unContrat);
         return ClientHttp.postRequest(ClientHttp.getUrl() + ClientHttp.getContratUrl(), auth.getToken(), String.valueOf(valueJson));
+    }
+
+    public static Boolean updateContrat(Contrat unContrat){
+        int contratId = unContrat.getId();
+        JsonNode node = JsonHandler.toJson(unContrat);
+        return ClientHttp.putRequest(ClientHttp.getUrl() + ClientHttp.getContratUrl() + contratId + "/", auth.getToken(), String.valueOf(node));
+    }
+
+    public static void DeleteContrat(int idContrat){
+        ClientHttp.deleteRequest(ClientHttp.getUrl()+ ClientHttp.getContratUrl()+ idContrat + "/", auth.getToken());
+    }
+
+    public static Contrat getContrat(int idContrat){
+        try {
+            String userString = ClientHttp.getRequest(ClientHttp.getUrl() + ClientHttp.getContratUrl()+ idContrat + "/", auth.getToken());
+            JsonNode node = JsonHandler.parse(userString);
+            return JsonHandler.fromJson(node, Contrat.class);
+        } catch (Exception e) {
+            // e.printStackTrace();
+            return null;
+        }
     }
 
 

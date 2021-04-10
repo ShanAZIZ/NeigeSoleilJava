@@ -17,6 +17,8 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
 
     private ArrayList<Contrat> allContrats = NeigeSoleil.getAllContrats();
     private ArrayList<User> allProprietaire = NeigeSoleil.getAllProprietaire();
+    private Contrat editingContrat;
+    private Boolean editStatus =false;
     private JPanel mainPanel = new JPanel();
 
     /***** DATA PANEL *****/
@@ -81,7 +83,38 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
         this.mainPanel.setLayout(new GridLayout(2,1));
 
         /***** FORM PANEL *****/
+        this.addFormPanel();
 
+
+        /***** DATA PANEL *****/
+        this.dataPanel.setLayout(new BorderLayout());
+        this.dataPanel.setOpaque(true);
+        String header[] = {"Id", "Proprietaire", "Nom", "Adresse", "Type","Prix Moyen","Status", "Debut du contrat", "Fin du Contrat", "Proposé le"};
+        this.tabModel = new TableModel(this.setData(), header);
+        this.dataTable = new JTable(this.tabModel);
+        this.dataTable.getTableHeader().setBackground(Color.WHITE);
+        this.scrollPane = new JScrollPane(this.dataTable);
+        this.dataPanel.add(this.scrollPane);
+        this.mainPanel.add(this.dataPanel);
+
+        /***** SOUTH PANEL *****/
+        this.southPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        this.southPanel.add(btnConfirmer);
+        this.southPanel.add(btnModifier);
+        this.southPanel.add(btnSupprimer);
+
+        this.add(mainPanel, BorderLayout.CENTER);
+        this.add(southPanel, BorderLayout.PAGE_END);
+
+        this.btnAnnuler.addActionListener(this);
+        this.btnConfirmer.addActionListener(this);
+        this.btnModifier.addActionListener(this);
+        this.btnValider.addActionListener(this);
+        this.btnSupprimer.addActionListener(this);
+        this.dataTable.addMouseListener(this);
+    }
+
+    public void addFormPanel(){
         this.formPanel.setLayout(new GridLayout(7,6));
         this.formPanel.add(lbUser);
         this.formPanel.add(cbxUserList);
@@ -121,34 +154,7 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
         this.formPanel.add(txtDateFin);
         this.formPanel.add(btnAnnuler);
         this.formPanel.add(btnValider);
-
         this.mainPanel.add(this.formPanel);
-
-        /***** DATA PANEL *****/
-        this.dataPanel.setLayout(new BorderLayout());
-        this.dataPanel.setOpaque(true);
-        String header[] = {"Id", "Proprietaire", "Nom", "Adresse", "Type","Prix Moyen","Status", "Debut du contrat", "Fin du Contrat", "Proposé le"};
-        this.tabModel = new TableModel(this.setData(), header);
-        this.dataTable = new JTable(this.tabModel);
-        this.dataTable.getTableHeader().setBackground(Color.WHITE);
-        this.scrollPane = new JScrollPane(this.dataTable);
-        this.dataPanel.add(this.scrollPane);
-        this.mainPanel.add(this.dataPanel);
-
-        /***** SOUTH PANEL *****/
-        this.southPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        this.southPanel.add(btnConfirmer);
-        this.southPanel.add(btnModifier);
-        this.southPanel.add(btnSupprimer);
-
-        this.add(mainPanel, BorderLayout.CENTER);
-        this.add(southPanel, BorderLayout.PAGE_END);
-
-        this.btnAnnuler.addActionListener(this);
-        this.btnConfirmer.addActionListener(this);
-        this.btnModifier.addActionListener(this);
-        this.btnValider.addActionListener(this);
-        this.btnSupprimer.addActionListener(this);
     }
 
     public void refresh(){
@@ -156,6 +162,63 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
         this.allContrats = NeigeSoleil.getAllContrats();
         this.tabModel.setDonnees(this.setData());
         this.cleanUserField();
+    }
+
+    public void editContrat() {
+        this.btnValider.setText("Modifier");
+        int num = this.dataTable.getSelectedRow();
+        int idContrat = Integer.parseInt(this.dataTable.getValueAt(num, 0).toString());
+        this.editingContrat = NeigeSoleil.getContrat(idContrat);
+        this.editStatus = true;
+        if(this.editingContrat != null) {
+            this.cbxUserList.setSelectedItem(this.editingContrat.getUser());
+            this.txtNom.setText(this.editingContrat.getNom());
+            this.txtAdresse.setText(this.editingContrat.getAdresse());
+            this.txtCodePostale.setText(this.editingContrat.getCode_postale());
+            this.txtVille.setText(this.editingContrat.getVille());
+            this.areaDescription.setText(this.editingContrat.getDescription());
+            this.cbxType.setSelectedItem(this.editingContrat.getType());
+            this.cbxExposition.setSelectedItem(this.editingContrat.getExposition());
+            this.txtSurfaceHabitable.setText(String.valueOf(this.editingContrat.getSurface_habitable()));
+            this.txtSurfaceBalcon.setText(String.valueOf(this.editingContrat.getSurface_balcon()));
+            this.txtCapacite.setText(String.valueOf(this.editingContrat.getCapacite()));
+            this.txtDistancePistes.setText(String.valueOf(this.editingContrat.getDistance_pistes()));
+            this.cbxStatus.setSelectedItem(this.editingContrat.getStatus());
+            this.txtPrixHaut.setText(String.valueOf(this.editingContrat.getPrix_saison_haute()));
+            this.txtPrixMoyen.setText(String.valueOf(this.editingContrat.getPrix_saison_moyenne()));
+            this.txtPrixBas.setText(String.valueOf(this.editingContrat.getPrix_saison_basse()));
+            this.txtDateDebut.setText(this.editingContrat.getDate_debut());
+            this.txtDateFin.setText(this.editingContrat.getDate_fin());
+        }
+    }
+
+    public void validateEdit(){
+        if(this.editingContrat != null){
+            this.editingContrat.setNom(this.txtNom.getText());
+            this.editingContrat.setAdresse(this.txtAdresse.getText());
+            this.editingContrat.setCode_postale(this.txtCodePostale.getText());
+            this.editingContrat.setVille(this.txtVille.getText());
+            this.editingContrat.setDescription(this.areaDescription.getText());
+            this.editingContrat.setType((String) this.cbxType.getSelectedItem());
+            this.editingContrat.setExposition((String)this.cbxExposition.getSelectedItem());
+            this.editingContrat.setSurface_habitable(Float.parseFloat(this.txtSurfaceHabitable.getText()));
+            this.editingContrat.setSurface_balcon(Float.parseFloat(this.txtSurfaceBalcon.getText()));
+            this.editingContrat.setCapacite(Integer.parseInt(this.txtCapacite.getText()));
+            this.editingContrat.setDistance_pistes(Float.parseFloat(this.txtDistancePistes.getText()));
+            this.editingContrat.setStatus((String) this.cbxStatus.getSelectedItem());
+            this.editingContrat.setPrix_saison_haute(Float.parseFloat(this.txtPrixHaut.getText()));
+            this.editingContrat.setPrix_saison_moyenne(Float.parseFloat(this.txtPrixMoyen.getText()));
+            this.editingContrat.setPrix_saison_basse(Float.parseFloat(this.txtPrixBas.getText()));
+            this.editingContrat.setDate_debut(this.txtDateDebut.getText());
+            this.editingContrat.setDate_fin(this.txtDateFin.getText());
+
+            if(NeigeSoleil.updateContrat(this.editingContrat)){
+                JOptionPane.showMessageDialog(this, "Modification reussie !");
+                this.refresh();
+            } else {
+                JOptionPane.showMessageDialog(this, "Echec de la modification!");
+            }
+        }
     }
 
     public Object[][] setData(){
@@ -201,12 +264,8 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
         this.txtDateDebut.setText("YYYY-MM-DD");
         this.txtDateFin.setText("YYYY-MM-DD");
 
-//        this.editStatus = false;
-//        this.cProprietaire.setVisible(true);
-//        this.cProprietaire.setSelected(false);
-//        this.btnValider.setText("Ajouter");
-//        this.btnProfile.setVisible(false);
-//        this.btnEditPassword.setVisible(false);
+        this.editStatus = false;
+        this.btnValider.setText("Ajouter");
     }
 
     public void ajouterContrat() throws Exception {
@@ -242,29 +301,54 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource()==btnValider){
-            try {
-                this.ajouterContrat();
-            } catch (Exception exc) {
-                JOptionPane.showMessageDialog(this, "Echec de l'ajout");
+            if(this.editStatus){
+                this.validateEdit();
+            } else {
+                try {
+                    this.ajouterContrat();
+                } catch (Exception exc) {
+                    JOptionPane.showMessageDialog(this, "Echec de l'ajout");
+                }
             }
+
         }
         if (e.getSource()==btnAnnuler){
             this.cleanUserField();
         }
         if (e.getSource()==btnModifier){
-
+            this.editContrat();
         }
         if (e.getSource()==btnConfirmer){
-
+            int num = this.dataTable.getSelectedRow();
+            int idContrat = Integer.parseInt(this.dataTable.getValueAt(num, 0).toString());
+            Contrat unContrat = NeigeSoleil.getContrat(idContrat);
+            if(unContrat.getStatus().equals("AVAIL")){
+                JOptionPane.showMessageDialog(this,"Ce contrat est deja confirmer");
+            } else {
+                unContrat.setStatus("AVAIL");
+                NeigeSoleil.updateContrat(unContrat);
+                JOptionPane.showMessageDialog(this,"Confirmation reussie");
+                this.refresh();
+            }
         }
         if (e.getSource()==btnSupprimer){
-
+            int retour = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer ce contrat ?",
+                    "Supression du contrat", JOptionPane.YES_NO_OPTION);
+            if (retour == 0)
+            {
+                int num = this.dataTable.getSelectedRow();
+                int idContrat = Integer.parseInt(this.dataTable.getValueAt(num, 0).toString());
+                NeigeSoleil.DeleteContrat(idContrat);
+                this.refresh();
+            }
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
+        if (e.getClickCount()==2){
+            this.editContrat();
+        }
     }
 
     @Override
