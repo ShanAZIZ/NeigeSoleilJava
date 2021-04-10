@@ -90,7 +90,6 @@ public class ClientHttp {
                 .build()
                 ;
         HttpResponse<String> response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response.body());
         return response.body();
     }
 
@@ -104,7 +103,6 @@ public class ClientHttp {
 
         try{
             HttpResponse<String> response = ClientHttp.client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.body());
             return response.statusCode() == 201;
         } catch (Exception e){
             // e.printStackTrace();
