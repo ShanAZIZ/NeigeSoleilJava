@@ -30,8 +30,6 @@ public class ReservationPanel extends JPanel implements ActionListener, MouseLis
     private JButton btnAnnuler = new JButton("Annuler la reservation");
     private JButton btnSupprimer = new JButton("Supprimer la reservation");
 
-    private JPanel locationPanel = new JPanel();
-
     /**** RESERVATION FORM ****/
     private JLabel lbUser = new JLabel("Utilisateur");
     private JLabel lbPropriete = new JLabel("Propriete");
@@ -55,12 +53,10 @@ public class ReservationPanel extends JPanel implements ActionListener, MouseLis
     private JScrollPane reScrollPane;
     private TableModel resTabModel;
 
-    private JPanel multipleDataPanel = new JPanel();
-
 
     public ReservationPanel(){
 
-        this.setLayout(new GridLayout(2,1));
+        this.setLayout(new BorderLayout());
 
         /**** RESERVATION OPTION BUTTON ****/
         this.reservationPanel.setLayout(new BorderLayout());
@@ -69,6 +65,7 @@ public class ReservationPanel extends JPanel implements ActionListener, MouseLis
         this.resOptionPanel.add(this.btnModifier);
         this.resOptionPanel.add(this.btnAnnuler);
         this.resOptionPanel.add(this.btnConfirmer);
+        this.resOptionPanel.add(this.btnSupprimer);
         this.reservationPanel.add(resOptionPanel, BorderLayout.PAGE_START);
 
         /**** RESERVATION FORM PANEL ****/
@@ -90,7 +87,7 @@ public class ReservationPanel extends JPanel implements ActionListener, MouseLis
 
         /**** RESERVATION DATA ****/
         this.resDataPanel.setLayout(new BorderLayout());
-        JLabel lbReservations = new JLabel("LES RESERVATIONS EN ATTENTES");
+        JLabel lbReservations = new JLabel("LES RESERVATIONS");
         this.resDataPanel.setOpaque(true);
         String headerRes[] = {"Id", "Utilisateur", "Contrat", "Status", "Date", "Debut du sejour", "Fin du sejour"};
         this.resTabModel = new TableModel(this.setResData(), headerRes);
@@ -101,8 +98,6 @@ public class ReservationPanel extends JPanel implements ActionListener, MouseLis
         this.resDataPanel.add(lbReservations, BorderLayout.PAGE_START);
         this.reservationPanel.add(resDataPanel);
 
-        this.locationPanel.setLayout(new BorderLayout());
-        this.multipleDataPanel.setLayout(new GridLayout(1,1));
 
         this.btnAbandonner.addActionListener(this);
         this.btnAnnuler.addActionListener(this);
@@ -110,9 +105,9 @@ public class ReservationPanel extends JPanel implements ActionListener, MouseLis
         this.btnModifier.addActionListener(this);
         this.btnValider.addActionListener(this);
         this.resDataTable.addMouseListener(this);
+        this.btnSupprimer.addActionListener(this);
 
         this.add(reservationPanel);
-        this.add(multipleDataPanel);
 
     }
 
@@ -125,6 +120,7 @@ public class ReservationPanel extends JPanel implements ActionListener, MouseLis
     }
 
     public void cleanResField() {
+        this.editingReservation = null;
         this.txtDateDebut.setText("");
         this.txtDateFin.setText("");
         this.editStatus = false;
@@ -187,9 +183,7 @@ public class ReservationPanel extends JPanel implements ActionListener, MouseLis
 
     public void editReservation() {
         this.btnValider.setText("Modifier");
-        int num = this.resDataTable.getSelectedRow();
-        int idReservation = Integer.parseInt(this.resDataTable.getValueAt(num, 0).toString());
-        this.editingReservation = NeigeSoleil.getReservation(idReservation);
+        this.setEditingReservation();
         if(this.editingReservation != null) {
             this.cbxUser.setSelectedItem(String.valueOf(this.editingReservation.getUser()));
             this.cbxPropriete.setSelectedItem(String.valueOf(this.editingReservation.getPropriete()));
@@ -215,16 +209,51 @@ public class ReservationPanel extends JPanel implements ActionListener, MouseLis
         }
     }
 
+    public void setEditingReservation(){
+        int num = this.resDataTable.getSelectedRow();
+        int idReservation = Integer.parseInt(this.resDataTable.getValueAt(num, 0).toString());
+        this.editingReservation = NeigeSoleil.getReservation(idReservation);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource()==btnAbandonner){
             this.cleanResField();
         }
         if(e.getSource()==btnAnnuler){
-
+            this.setEditingReservation();
+            if (this.editingReservation != null){
+                if(this.editingReservation.getStatus_reservation().equals("CANCEL")){
+                    JOptionPane.showMessageDialog(this,"Cette reservation est déjà annulée");
+                } else {
+                    this.editingReservation.setStatus_reservation("CANCEL");
+                    if (NeigeSoleil.updateReservation(this.editingReservation)){
+                        JOptionPane.showMessageDialog(this,"Annulation reussie !");
+                    } else {
+                        JOptionPane.showMessageDialog(this,"Echec de l'annulation!");
+                    }
+                }
+            }
+            this.refresh();
         }
         if (e.getSource()==btnConfirmer){
-
+            this.setEditingReservation();
+            if (this.editingReservation != null){
+                if(this.editingReservation.getStatus_reservation().equals("LOCATION")){
+                    JOptionPane.showMessageDialog(this,"Cette reservation est déjà confirmée");
+                }
+                else if (this.editingReservation.getStatus_reservation().equals("CANCEL")){
+                    JOptionPane.showMessageDialog(this,"Cette reservation à été annulée");
+                } else {
+                    this.editingReservation.setStatus_reservation("LOCATION");
+                    if (NeigeSoleil.updateReservation(this.editingReservation)){
+                        JOptionPane.showMessageDialog(this,"Confirmation reussie !");
+                    } else {
+                        JOptionPane.showMessageDialog(this,"Echec de la confirmation!");
+                    }
+                }
+            }
+            this.refresh();
         }
         if (e.getSource()==btnModifier){
             this.editReservation();
@@ -235,6 +264,17 @@ public class ReservationPanel extends JPanel implements ActionListener, MouseLis
                 this.refresh();
             } else {
                 this.ajouterReservation();
+            }
+        }
+        if (e.getSource()==btnSupprimer){
+            int retour = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer cette Reservation ?",
+                    "Supression d'une reservation", JOptionPane.YES_NO_OPTION);
+            if (retour == 0)
+            {
+                int num = this.resDataTable.getSelectedRow();
+                int id = Integer.parseInt(this.resDataTable.getValueAt(num, 0).toString());
+                NeigeSoleil.deleteReservation(id);
+                this.refresh();
             }
         }
 

@@ -212,7 +212,6 @@ public class NeigeSoleil {
         try {
             String reservationString = ClientHttp.getRequest(ClientHttp.getUrl() + ClientHttp.getReservationUrl()+ idReservation + "/", auth.getToken());
             JsonNode node = JsonHandler.parse(reservationString);
-            System.out.println(reservationString);
             return JsonHandler.fromJson(node, Reservation.class);
         } catch (Exception e) {
             e.printStackTrace();
