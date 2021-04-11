@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 
 public class MyWindow extends JFrame implements ActionListener {
 
+    // TODO: Logout Logic
+    // TODO: Changement des URLS si besoin (En cas d'évolution de l'api)
     private LoginPanel loginPanel;
     private MainPanel mainPanel;
 

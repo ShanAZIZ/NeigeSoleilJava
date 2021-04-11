@@ -207,11 +207,16 @@ public class UserPanel extends JPanel implements ActionListener, MouseListener {
 
     public void editPassword(){
         String password = JOptionPane.showInputDialog(this, "Saisissez le nouveau mot de passe");
-        if(NeigeSoleil.editPassword(this.editingUser.getId(), password)){
-            JOptionPane.showMessageDialog(this, "Changement de mot de passe reussi");
-        } else {
-            JOptionPane.showMessageDialog(this, "Echec de l'opération");
+        if(password != null){
+            if(!password.isEmpty()){
+                if(NeigeSoleil.editPassword(this.editingUser.getId(), password)){
+                    JOptionPane.showMessageDialog(this, "Changement de mot de passe reussi");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Echec de l'opération");
+                }
+            }
         }
+
     }
 
     public void profileHandler(){
