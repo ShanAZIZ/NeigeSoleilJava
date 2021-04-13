@@ -9,7 +9,7 @@ import java.net.http.HttpResponse;
 
 public class ClientHttp {
 
-    private static String url = "http://localhost:8000/";
+    private static String url = "https://neigesoleil-app.azurewebsites.net/";
     private static String tokenUrl = "api-token-auth/";
     private static String userUrl = "api/user/";
     private static String userProfileUrl = "api/user-profile/";
