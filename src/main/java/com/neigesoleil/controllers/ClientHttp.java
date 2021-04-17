@@ -9,8 +9,10 @@ import java.net.http.HttpResponse;
 
 public class ClientHttp {
 
+    // TODO: Refactor URL -> Rendre static final (Constante) dans NeigeSoleil.java
+
     private static String url = "https://neigesoleil-app.azurewebsites.net/";
-    private static String tokenUrl = "api-token-auth/";
+    private static String tokenUrl = "api/token-auth/";
     private static String userUrl = "api/user/";
     private static String userProfileUrl = "api/user-profile/";
     private static String profileUrl = "api/profile/";
