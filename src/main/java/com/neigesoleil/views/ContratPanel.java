@@ -223,10 +223,10 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
 
     public Object[][] setData(){
         Object [][] arr = new Object [this.allContrats.size()][10];
-        int i =0;
+        int i = 0;
         for(Contrat unContrat : this.allContrats){
             arr[i][0] = unContrat.getId();
-            arr[i][1] = NeigeSoleil.getUser(unContrat.getUser()).getUsername();
+            arr[i][1] = this.getProprietaireName(unContrat.getUser());
             arr[i][2] = unContrat.getNom();
             arr[i][3] = unContrat.getAdresse() + ", " + unContrat.getCode_postale() + unContrat.getVille();
             arr[i][4] = unContrat.getType();
@@ -246,6 +246,15 @@ public class ContratPanel extends JPanel implements ActionListener, MouseListene
             userList[i] = String.valueOf(this.allProprietaire.get(i).getId());
         }
         return userList;
+    }
+
+    public String getProprietaireName(int id){
+        for(User prop : allProprietaire){
+            if(prop.getId() == id){
+                return prop.getUsername();
+            }
+        }
+        return "";
     }
 
     public void cleanContratField() {

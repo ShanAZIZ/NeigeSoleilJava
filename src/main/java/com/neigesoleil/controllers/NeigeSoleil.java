@@ -19,7 +19,6 @@ public class NeigeSoleil {
     private static MyWindow mainWindow;
 
     public static void main(String[] args) {
-
         NeigeSoleil.mainWindow = new MyWindow();
         NeigeSoleil.mainWindow.showLogin();
         NeigeSoleil.mainWindow.setVisible(true);
@@ -222,6 +221,4 @@ public class NeigeSoleil {
     public static void deleteReservation(int idReservation){
         ClientHttp.deleteRequest(ClientHttp.getUrl()+ ClientHttp.getReservationUrl()+ idReservation + "/", auth.getToken());
     }
-
-
 }
