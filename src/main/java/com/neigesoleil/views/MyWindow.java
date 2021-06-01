@@ -1,5 +1,7 @@
 package com.neigesoleil.views;
 
+import com.neigesoleil.controllers.ClientHttp;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,6 +13,10 @@ public class MyWindow extends JFrame implements ActionListener {
     // TODO: Changement des URLS si besoin (En cas d'évolution de l'api)
     private LoginPanel loginPanel;
     private MainPanel mainPanel;
+    private JMenuBar menuBar = new JMenuBar();
+    private JMenu mnOption = new JMenu("Options");
+
+    private JMenuItem itemChangeLien = new JMenuItem("Changer l'url");
 
     public MyWindow() {
         // Fenêtre principale
@@ -19,6 +25,10 @@ public class MyWindow extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setMinimumSize(new Dimension(800, 600));
         this.setLocationRelativeTo(null);
+        this.menuBar.add(this.mnOption);
+        this.mnOption.add(this.itemChangeLien);
+        this.itemChangeLien.addActionListener(this);
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException e) {
@@ -31,11 +41,15 @@ public class MyWindow extends JFrame implements ActionListener {
             e.printStackTrace();
         }
         //this.setResizable(false);
+
+        this.setJMenuBar(menuBar);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        if (e.getSource() == this.itemChangeLien) {
+            ClientHttp.setUrl(JOptionPane.showInputDialog("(URL ACTUELLE : "+ ClientHttp.getUrl() +"). ENTRER UNE URL :"));
+        }
     }
 
     public void showLogin(){

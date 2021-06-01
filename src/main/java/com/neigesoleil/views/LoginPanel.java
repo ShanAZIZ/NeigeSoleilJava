@@ -11,7 +11,7 @@ import java.awt.event.MouseListener;
 
 public class LoginPanel extends JPanel implements ActionListener, MouseListener {
 
-    private JLabel lbNeigeSoleil = new JLabel("NEIGE SOLEIL");
+    private JLabel lbNeigeSoleil = new JLabel("NSGEST");
     private JLabel lbTitre = new JLabel("ADMINISTRATION");
     private JLabel lbUsername = new JLabel("Nom d'utilisateur");
     private JTextField txtUsername = new JTextField();

@@ -10,6 +10,7 @@ import java.net.http.HttpResponse;
 public class ClientHttp {
 
     // TODO: Refactor URL -> Rendre static final (Constante) dans NeigeSoleil.java
+    // TODO: Rendre les requetes asynchrones pour ne pas figer l'UI
 
     private static String url = "https://neigesoleil-app.azurewebsites.net/";
     private static String tokenUrl = "api/token-auth/";
